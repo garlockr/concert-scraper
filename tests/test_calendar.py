@@ -110,6 +110,24 @@ def test_build_description_empty():
     assert build_description(event) == ""
 
 
+def test_build_description_multiday():
+    """Multi-day event description should include date range."""
+    event = Event(
+        title="Fest", date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15), venue_name="Venue",
+    )
+    desc = build_description(event)
+    assert "Multi-day: 2025-06-13 to 2025-06-15" in desc
+
+
+def test_build_description_multiday_not_shown_for_single_day():
+    """Single-day event should not include Multi-day line."""
+    event = Event(title="Show", date=datetime.date(2025, 6, 15), venue_name="Venue",
+                  price="$20")
+    desc = build_description(event)
+    assert "Multi-day" not in desc
+
+
 # ---------------------------------------------------------------------------
 # build_vevent — shared iCalendar VEVENT builder
 # ---------------------------------------------------------------------------

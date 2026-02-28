@@ -23,6 +23,7 @@ class Event(BaseModel):
 
     title: str
     date: datetime.date
+    end_date: datetime.date | None = None
     doors_time: datetime.time | None = None
     show_time: datetime.time | None = None
     end_time: datetime.time | None = None
@@ -50,20 +51,39 @@ class Event(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def end_datetime(self) -> datetime.datetime:
-        """Return end time on the event date, or start + default duration.
+        """Return end time on the last day of the event, or start + default duration.
+        For multi-day events, the end time is on end_date instead of date.
         If end_time crosses midnight (before start), rolls to the next day."""
+        last_day = self.end_date or self.date
         if self.end_time:
-            end = datetime.datetime.combine(self.date, self.end_time)
-            if end <= self.start_datetime:
+            end = datetime.datetime.combine(last_day, self.end_time)
+            if end <= datetime.datetime.combine(last_day, self.start_datetime.time()):
                 end += datetime.timedelta(days=1)
             return end
-        return self.start_datetime + datetime.timedelta(
-            hours=self.default_duration_hours
-        )
+        return datetime.datetime.combine(
+            last_day, self.start_datetime.time()
+        ) + datetime.timedelta(hours=self.default_duration_hours)
 
     def normalized_key(self) -> str:
-        """Return a dedup key: venue|date|normalized_title."""
-        return f"{self.venue_name}|{self.date.isoformat()}|{_normalize(self.title)}"
+        """Return a dedup key: venue|date_or_range|normalized_title.
+        Multi-day events use 'start..end' for the date portion."""
+        if self.end_date and self.end_date != self.date:
+            date_part = f"{self.date.isoformat()}..{self.end_date.isoformat()}"
+        else:
+            date_part = self.date.isoformat()
+        return f"{self.venue_name}|{date_part}|{_normalize(self.title)}"
+
+    def covered_day_keys(self) -> list[str]:
+        """Return individual-day dedup keys for each day this event covers.
+        Used for backward-compat: detecting pre-merge individual-day entries."""
+        norm_title = _normalize(self.title)
+        last = self.end_date or self.date
+        keys = []
+        d = self.date
+        while d <= last:
+            keys.append(f"{self.venue_name}|{d.isoformat()}|{norm_title}")
+            d += datetime.timedelta(days=1)
+        return keys
 
 
 class VenueConfig(BaseModel):

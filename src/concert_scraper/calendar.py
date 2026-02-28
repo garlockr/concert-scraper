@@ -27,6 +27,8 @@ def build_location(event: Event) -> str:
 def build_description(event: Event) -> str:
     """Build a human-readable description string for an event."""
     parts: list[str] = []
+    if event.end_date and event.end_date != event.date:
+        parts.append(f"Multi-day: {event.date} to {event.end_date}")
     if event.doors_time:
         parts.append(f"Doors: {event.doors_time.strftime('%I:%M %p')}")
     if event.price:

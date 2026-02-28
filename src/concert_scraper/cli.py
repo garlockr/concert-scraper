@@ -41,6 +41,7 @@ from concert_scraper import calendar as cal_mod
 from concert_scraper import scraper
 from concert_scraper import extractor
 from concert_scraper.ics import export_ics
+from concert_scraper.merge import merge_multiday_events
 from concert_scraper.models import Event
 
 
@@ -115,6 +116,13 @@ def _venues_with_events(config) -> set[str]:
         return set()
 
 
+def _format_date_range(event: Event) -> str:
+    """Format an event's date or date range for display."""
+    if event.end_date and event.end_date != event.date:
+        return f"{event.date} to {event.end_date}"
+    return str(event.date)
+
+
 async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | None, retry_empty: bool = False) -> None:
     """Core async scrape logic."""
     try:
@@ -182,16 +190,29 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
         if not events:
             click.echo("  No upcoming events found.")
         else:
+            events = merge_multiday_events(events)
             for event in events:
                 key = event.normalized_key()
+                date_str = _format_date_range(event)
+
+                # Check the merged key first
                 if db_mod.is_seen(config.db_path, key):
-                    click.echo(f"  [SKIP] {event.title} on {event.date} (already added)")
+                    click.echo(f"  [SKIP] {event.title} on {date_str} (already added)")
                     skipped += 1
                     continue
 
+                # Backward compat: if all individual day keys were already
+                # added before the merge feature, skip the merged event
+                if event.end_date and event.end_date != event.date:
+                    day_keys = event.covered_day_keys()
+                    if all(db_mod.is_seen(config.db_path, dk) for dk in day_keys):
+                        click.echo(f"  [SKIP] {event.title} on {date_str} (individual days already added)")
+                        skipped += 1
+                        continue
+
                 if dry_run:
                     click.echo(
-                        f"  [DRY RUN] Would add: {event.title} on {event.date}"
+                        f"  [DRY RUN] Would add: {event.title} on {date_str}"
                         f" at {event.show_time or event.doors_time or '20:00'}"
                     )
                     added += 1
@@ -207,7 +228,17 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
                         event.date.isoformat(),
                         event_json=event.model_dump_json(),
                     )
-                    click.echo(f"  [ADDED] {event.title} on {event.date}")
+                    # Mark individual day keys so future runs don't re-add them
+                    if event.end_date and event.end_date != event.date:
+                        for dk in event.covered_day_keys():
+                            db_mod.mark_seen(
+                                config.db_path,
+                                dk,
+                                venue.name,
+                                event.title,
+                                event.date.isoformat(),
+                            )
+                    click.echo(f"  [ADDED] {event.title} on {date_str}")
                     added += 1
                 else:
                     click.echo(f"  [ERROR] Failed to add {event.title} to calendar", err=True)

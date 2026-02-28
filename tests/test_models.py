@@ -114,6 +114,127 @@ def test_start_datetime_falls_back_to_doors_time():
     assert event.start_datetime == datetime.datetime(2025, 7, 1, 18, 0)
 
 
+def test_end_date_defaults_to_none():
+    """end_date should default to None for backward compatibility."""
+    event = Event(title="Show", date=datetime.date(2025, 7, 1), venue_name="Venue")
+    assert event.end_date is None
+
+
+def test_end_datetime_uses_end_date():
+    """end_datetime should use end_date when set for multi-day events."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        show_time=datetime.time(19, 0),
+        end_time=datetime.time(23, 0),
+        venue_name="Venue",
+    )
+    assert event.end_datetime == datetime.datetime(2025, 6, 15, 23, 0)
+
+
+def test_end_datetime_without_end_date():
+    """end_datetime should use date when end_date is not set (single-day)."""
+    event = Event(
+        title="Show",
+        date=datetime.date(2025, 6, 15),
+        show_time=datetime.time(19, 0),
+        end_time=datetime.time(23, 0),
+        venue_name="Venue",
+    )
+    assert event.end_datetime == datetime.datetime(2025, 6, 15, 23, 0)
+
+
+def test_end_datetime_multiday_default_duration():
+    """Without end_time, multi-day end_datetime should be on end_date + default duration."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        show_time=datetime.time(19, 0),
+        venue_name="Venue",
+    )
+    assert event.end_datetime == datetime.datetime(2025, 6, 15, 22, 0)
+
+
+def test_end_datetime_multiday_midnight_crossing():
+    """Multi-day event with end_time before start should roll to next day."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        show_time=datetime.time(21, 0),
+        end_time=datetime.time(1, 0),
+        venue_name="Venue",
+    )
+    assert event.end_datetime == datetime.datetime(2025, 6, 16, 1, 0)
+
+
+def test_normalized_key_with_date_range():
+    """Multi-day event key should use start..end date format."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        venue_name="Venue",
+    )
+    key = event.normalized_key()
+    assert "2025-06-13..2025-06-15" in key
+
+
+def test_normalized_key_single_day_no_range():
+    """Single-day event key should just use the date, not a range."""
+    event = Event(title="Show", date=datetime.date(2025, 6, 15), venue_name="Venue")
+    key = event.normalized_key()
+    assert "2025-06-15" in key
+    assert ".." not in key
+
+
+def test_covered_day_keys():
+    """covered_day_keys should return one key per day in the range."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        venue_name="Venue",
+    )
+    keys = event.covered_day_keys()
+    assert len(keys) == 3
+    assert "Venue|2025-06-13|fest" in keys
+    assert "Venue|2025-06-14|fest" in keys
+    assert "Venue|2025-06-15|fest" in keys
+
+
+def test_covered_day_keys_single_day():
+    """Single-day event should return one key matching normalized_key()."""
+    event = Event(title="Show", date=datetime.date(2025, 6, 15), venue_name="Venue")
+    keys = event.covered_day_keys()
+    assert len(keys) == 1
+    assert keys[0] == event.normalized_key()
+
+
+def test_json_roundtrip_with_end_date():
+    """Event with end_date should survive JSON serialization/deserialization."""
+    event = Event(
+        title="Fest",
+        date=datetime.date(2025, 6, 13),
+        end_date=datetime.date(2025, 6, 15),
+        venue_name="Venue",
+    )
+    json_str = event.model_dump_json()
+    restored = Event.model_validate_json(json_str)
+    assert restored.end_date == datetime.date(2025, 6, 15)
+    assert restored.date == datetime.date(2025, 6, 13)
+
+
+def test_json_roundtrip_without_end_date():
+    """Event without end_date should survive JSON roundtrip with None."""
+    event = Event(title="Show", date=datetime.date(2025, 7, 1), venue_name="Venue")
+    json_str = event.model_dump_json()
+    restored = Event.model_validate_json(json_str)
+    assert restored.end_date is None
+
+
 def test_venue_config_requires_browser_default_false():
     """VenueConfig with no requires_browser should default to False."""
     vc = VenueConfig(name="Test", url="https://example.com", location="123 Main St")
