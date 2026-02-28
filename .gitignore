@@ -9,6 +9,6 @@ build/
 data/
 .env
 venues.yaml
-*.ics
+output/*.ics.tmp
 .playwright/
 logs/
