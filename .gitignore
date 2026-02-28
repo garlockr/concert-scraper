@@ -11,3 +11,4 @@ data/
 venues.yaml
 *.ics
 .playwright/
+logs/

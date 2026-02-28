@@ -215,7 +215,7 @@ venues:
     requires_browser: false
 
   - name: "1860 Saloon"
-    url: "https://1860saloon.com/"
+    url: "https://1860saloon.com/events-music/"
     location: "1860 S 9th St, St. Louis, MO 63104"
     requires_browser: true
 

@@ -31,14 +31,46 @@ def _validate_url(url: str) -> None:
 
 # Common paths where venues host their event listings
 COMMON_EVENT_PATHS = [
-    "/calendar",
+    # Standard
     "/events",
+    "/calendar",
     "/shows",
     "/schedule",
     "/concerts",
-    "/upcoming-events",
     "/event",
+    # Compound
     "/live-music",
+    "/events-music",
+    "/upcoming-events",
+    "/upcoming-shows",
+    "/live-events",
+    "/music-events",
+    "/all-events",
+    "/event-calendar",
+    "/events-calendar",
+    "/music-calendar",
+    "/show-calendar",
+    "/event-schedule",
+    # Venue/bar/brewery lingo
+    "/entertainment",
+    "/whats-on",
+    "/happenings",
+    "/lineup",
+    "/music",
+    "/performances",
+    "/tickets",
+    "/upcoming",
+    "/on-stage",
+    "/gigs",
+    # WordPress The Events Calendar plugin
+    "/events/list",
+    "/events/month",
+    "/tribe-events",
+    # CMS variants
+    "/event-listings",
+    "/show-dates",
+    "/dates",
+    "/programming",
 ]
 
 
@@ -132,7 +164,9 @@ async def scrape_browser(url: str) -> str:
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
-        await page.goto(url, wait_until="networkidle", timeout=30_000)
+        await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
+        # Give JS frameworks time to render content
+        await page.wait_for_timeout(3000)
         content = await page.content()
         await browser.close()
     return clean_html(content)

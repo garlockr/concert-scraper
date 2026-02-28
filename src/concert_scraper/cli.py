@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import sys
 import time
@@ -44,13 +45,38 @@ from concert_scraper.ics import export_ics
 from concert_scraper.models import Event
 
 
+def _setup_logging(log_file: str, verbose: bool) -> None:
+    """Configure file and optional console logging."""
+    log_path = Path(log_file)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    root = logging.getLogger("concert_scraper")
+    root.setLevel(logging.DEBUG)
+
+    fmt = logging.Formatter("%(asctime)s %(levelname)-8s %(name)s — %(message)s")
+
+    fh = logging.FileHandler(log_path, encoding="utf-8")
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(fmt)
+    root.addHandler(fh)
+
+    if verbose:
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+        ch.setFormatter(fmt)
+        root.addHandler(ch)
+
+
 @click.group()
 @click.option("--config", "config_path", default="venues.yaml", help="Path to config file")
+@click.option("--log-file", default="logs/scraper.log", help="Path to log file")
+@click.option("-v", "--verbose", is_flag=True, help="Also print log messages to terminal")
 @click.version_option(version=__version__)
 @click.pass_context
-def main(ctx: click.Context, config_path: str) -> None:
+def main(ctx: click.Context, config_path: str, log_file: str, verbose: bool) -> None:
     """Concert Scraper -- Scrape venue websites and add events to your calendar."""
     _load_dotenv()
+    _setup_logging(log_file, verbose)
     ctx.ensure_object(dict)
     ctx.obj["config_path"] = config_path
 
@@ -66,6 +92,9 @@ def scrape_cmd(ctx: click.Context, dry_run: bool, venue_filter: str | None) -> N
 
 # Register the command under the name "scrape"
 scrape_cmd.name = "scrape"
+
+
+logger = logging.getLogger(__name__)
 
 
 async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | None) -> None:
@@ -101,12 +130,15 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
 
     for i, venue in enumerate(venues):
         click.echo(f"Scraping {venue.name}...")
+        logger.info("Scraping %s (%s)", venue.name, venue.url)
         try:
             markdown = await scraper.scrape(venue.url, venue.requires_browser)
         except Exception as exc:
             click.echo(f"  [ERROR] Failed to scrape {venue.name}: {exc}", err=True)
+            logger.error("Failed to scrape %s (%s): %s", venue.name, venue.url, exc)
             continue
 
+        logger.info("Got %d chars of markdown from %s", len(markdown), venue.name)
         click.echo("  Extracting events...")
         try:
             events = await extractor.extract_events(
@@ -114,8 +146,10 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
             )
         except Exception as exc:
             click.echo(f"  [ERROR] Failed to extract events from {venue.name}: {exc}", err=True)
+            logger.error("Failed to extract events from %s: %s", venue.name, exc)
             continue
 
+        logger.info("Extracted %d events from %s", len(events), venue.name)
         if not events:
             click.echo("  No upcoming events found.")
         else:
@@ -154,6 +188,7 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
 
     action = "Would add" if dry_run else "Added"
     click.echo(f"Done. {action} {added} new events, skipped {skipped} duplicates.")
+    logger.info("Run complete. %s %d new events, skipped %d duplicates.", action, added, skipped)
 
 
 @main.command(name="list")
