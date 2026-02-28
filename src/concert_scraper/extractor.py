@@ -149,7 +149,7 @@ async def extract_via_anthropic(
     client = anthropic.AsyncAnthropic(api_key=api_key)
     response = await client.messages.create(
         model=config.anthropic.model,
-        max_tokens=4096,
+        max_tokens=8192,
         system=prompt,
         messages=[{"role": "user", "content": markdown}],
     )
@@ -157,7 +157,22 @@ async def extract_via_anthropic(
     content = response.content[0].text
     content = _strip_markdown_fences(content)
 
-    result = json.loads(content)
+    try:
+        result = json.loads(content)
+    except json.JSONDecodeError as e:
+        logger.debug("Raw Anthropic response (first 500 chars): %s", content[:500])
+        # Try to extract JSON array from the response with a regex
+        match = re.search(r'\[.*\]', content, re.DOTALL)
+        if match:
+            try:
+                result = json.loads(match.group())
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse Anthropic response as JSON: %s", e)
+                return []
+        else:
+            logger.warning("No JSON array found in Anthropic response: %s", e)
+            return []
+
     if isinstance(result, dict) and "events" in result:
         result = result["events"]
     return result if isinstance(result, list) else []

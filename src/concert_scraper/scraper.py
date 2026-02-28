@@ -1,7 +1,24 @@
 from __future__ import annotations
 
+import logging
+from urllib.parse import urlparse, urlunparse
+
 import html2text
 import httpx
+
+logger = logging.getLogger(__name__)
+
+# Common paths where venues host their event listings
+COMMON_EVENT_PATHS = [
+    "/calendar",
+    "/events",
+    "/shows",
+    "/schedule",
+    "/concerts",
+    "/upcoming-events",
+    "/event",
+    "/live-music",
+]
 
 
 def clean_html(raw_html: str) -> str:
@@ -40,9 +57,23 @@ def _looks_like_spa_shell(html: str) -> bool:
     return False
 
 
+def _build_fallback_urls(url: str) -> list[str]:
+    """Given a URL that 404'd, generate fallback URLs using common event paths."""
+    parsed = urlparse(url)
+    base = urlunparse((parsed.scheme, parsed.netloc, "", "", "", ""))
+    seen = {parsed.path.rstrip("/")}
+    fallbacks = []
+    for path in COMMON_EVENT_PATHS:
+        if path.rstrip("/") not in seen:
+            fallbacks.append(base + path)
+            seen.add(path.rstrip("/"))
+    return fallbacks
+
+
 async def scrape_fast(url: str) -> str | None:
     """Fetch a URL via plain HTTP. Returns cleaned markdown or None if it
-    looks like an SPA shell or request fails."""
+    looks like an SPA shell or request fails.
+    If the URL returns 404, tries common event page paths on the same domain."""
     async with httpx.AsyncClient(
         timeout=15,
         follow_redirects=True,
@@ -51,6 +82,18 @@ async def scrape_fast(url: str) -> str | None:
         response = await client.get(url)
         if response.status_code == 200 and not _looks_like_spa_shell(response.text):
             return clean_html(response.text)
+
+        if response.status_code in (404, 410):
+            logger.info("Got %d for %s, trying common event paths...", response.status_code, url)
+            for fallback_url in _build_fallback_urls(url):
+                try:
+                    resp = await client.get(fallback_url, timeout=10)
+                    if resp.status_code == 200 and not _looks_like_spa_shell(resp.text):
+                        logger.info("Found working URL: %s", fallback_url)
+                        return clean_html(resp.text)
+                except (httpx.HTTPError, httpx.TimeoutException):
+                    continue
+
         return None
 
 

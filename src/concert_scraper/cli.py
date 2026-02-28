@@ -1,10 +1,26 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import sys
 import time
+from pathlib import Path
 
 import click
+
+
+def _load_dotenv() -> None:
+    """Load .env file from project root if it exists."""
+    env_file = Path.cwd() / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
+
+_load_dotenv()
 
 from concert_scraper import __version__
 from concert_scraper.config import load_config
