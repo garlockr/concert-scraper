@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "concert-scraper"
+version = "0.1.0"
+description = "Scrape concert venues and add events to Apple Calendar"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "html2text>=2024.2",
+    "pydantic>=2.0",
+    "click>=8.0",
+    "pyyaml>=6.0",
+    "icalendar>=6.0",
+    "python-dateutil>=2.9",
+    "anthropic>=0.40",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.48"]
+caldav = ["caldav>=1.4"]
+all = ["playwright>=1.48", "caldav>=1.4"]
+
+[project.scripts]
+concert-scraper = "concert_scraper.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

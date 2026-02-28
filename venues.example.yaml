@@ -1,0 +1,71 @@
+# Concert Scraper Configuration
+# Copy this to venues.yaml and customize with your local venues
+
+# Name of the calendar to create/use
+calendar_name: "Local Concerts"
+
+# Calendar backend: "auto" (detect platform), "applescript" (macOS), "caldav" (iCloud/cross-platform), "ics" (file export only)
+# "auto" will use AppleScript on macOS, ICS file export on Linux/other
+calendar_backend: "auto"
+
+# CalDAV settings (only used if calendar_backend is "caldav")
+# For iCloud: generate an app-specific password at https://appleid.apple.com
+caldav:
+  url: "https://caldav.icloud.com"
+  username: "your-apple-id@icloud.com"
+  password: "your-app-specific-password"
+
+# ICS export settings (only used if calendar_backend is "ics" or "auto" on Linux)
+ics_output_dir: "output/"
+
+# LLM backend: "anthropic" (default, requires API key) or "ollama" (free, local, optional)
+llm_backend: "anthropic"
+
+# Anthropic settings (used when llm_backend is "anthropic")
+# Set ANTHROPIC_API_KEY env var before running.
+# Cost: ~$0.05/run for 20 venues (~$2.50/year on weekly schedule)
+# Model options by cost (cheapest first):
+#   - "claude-haiku-4-5-20251001" -- cheapest, ~$0.25/M input tokens, excellent for extraction
+#   - "claude-sonnet-4-6" -- better quality, ~10x cost of Haiku
+anthropic:
+  model: "claude-haiku-4-5-20251001"
+
+# Ollama settings (only used if llm_backend is "ollama")
+# Requires Ollama installed and running locally -- see https://ollama.com
+# Recommended models (in order of quality vs. resource tradeoff):
+#   - "llama3.1" -- good balance, runs on 8GB RAM
+#   - "qwen2.5:14b" -- excellent at structured extraction, needs 16GB RAM
+ollama:
+  model: "llama3.1"
+  base_url: "http://localhost:11434"
+
+# Database path for deduplication tracking
+db_path: "data/events.db"
+
+# Seconds to wait between scraping each venue (be polite)
+request_delay: 2
+
+# Default event duration in hours (when end time is unknown)
+default_event_duration_hours: 3
+
+# Venues to scrape
+# Each venue needs:
+#   - name: Human-readable venue name
+#   - url: URL of their events/calendar page
+#   - location: Street address (used in calendar events)
+#   - requires_browser: (optional) Set to true for JS-heavy sites. Requires `pip install concert-scraper[browser]`
+venues:
+  - name: "The Fillmore"
+    url: "https://www.livenation.com/venue/KovZpZAJAelA/the-fillmore-events"
+    location: "1805 Geary Blvd, San Francisco, CA 94115"
+    requires_browser: false
+
+  - name: "Red Rocks Amphitheatre"
+    url: "https://www.redrocksonline.com/concerts-events/upcoming-events/"
+    location: "18300 W Alameda Pkwy, Morrison, CO 80465"
+    requires_browser: false
+
+  - name: "The Ryman Auditorium"
+    url: "https://www.ryman.com/events"
+    location: "116 Rep. John Lewis Way N, Nashville, TN 37219"
+    requires_browser: true

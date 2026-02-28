@@ -1,0 +1,3 @@
+# Concert Scraper — runs every Monday at 9:00 AM
+# Install with: crontab -e (then paste this line)
+0 9 * * 1 cd /home/rgarlock/Code/concert-scraper && /home/rgarlock/Code/concert-scraper/.venv/bin/concert-scraper scrape >> /tmp/concert-scraper.log 2>&1

@@ -1,0 +1,7 @@
+[Unit]
+Description=Concert Scraper - scrape venues and update calendar
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/rgarlock/Code/concert-scraper
+ExecStart=/home/rgarlock/Code/concert-scraper/.venv/bin/concert-scraper scrape
