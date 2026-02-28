@@ -10,6 +10,7 @@ anthropic:
 db_path: "data/events.db"
 request_delay: 2
 default_event_duration_hours: 3
+timezone: "America/Chicago"
 ics_output_dir: "output/"
 
 venues:

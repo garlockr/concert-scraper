@@ -48,6 +48,10 @@ request_delay: 2
 # Default event duration in hours (when end time is unknown)
 default_event_duration_hours: 3
 
+# Timezone for calendar events (IANA name, e.g. "America/Chicago")
+# If empty, events use naive/floating times (interpreted as the calendar app's local timezone)
+timezone: "America/Chicago"
+
 # Venues to scrape
 # Each venue needs:
 #   - name: Human-readable venue name

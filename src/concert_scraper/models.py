@@ -119,6 +119,7 @@ class AppConfig(BaseModel):
     db_path: str = "data/events.db"
     request_delay: int = 2
     default_event_duration_hours: int = 3
+    timezone: str = ""
     venues: list[VenueConfig] = []
 
     def resolved_calendar_backend(self) -> str:

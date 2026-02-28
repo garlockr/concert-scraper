@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from icalendar import Calendar as iCalendar
 from icalendar import Event as iCalEvent
@@ -16,14 +17,14 @@ from concert_scraper.models import AppConfig, Event
 logger = logging.getLogger(__name__)
 
 
-def _build_location(event: Event) -> str:
+def build_location(event: Event) -> str:
     """Build location string with venue name and address."""
     if event.venue_location:
         return f"{event.venue_name} — {event.venue_location}"
     return event.venue_name
 
 
-def _build_description(event: Event) -> str:
+def build_description(event: Event) -> str:
     """Build a human-readable description string for an event."""
     parts: list[str] = []
     if event.doors_time:
@@ -37,6 +38,36 @@ def _build_description(event: Event) -> str:
     if event.ticket_url:
         parts.append(f"Tickets: {event.ticket_url}")
     return "\n".join(parts) if parts else ""
+
+
+def build_vevent(event: Event, timezone: str = "") -> iCalEvent:
+    """Build an iCalendar VEVENT component from an Event.
+
+    Args:
+        event: The concert event.
+        timezone: IANA timezone name (e.g. "America/Chicago"). If empty,
+                  datetimes are stored as naive (floating) times.
+    """
+    vevent = iCalEvent()
+    vevent.add("summary", event.title)
+
+    start = event.start_datetime
+    end = event.end_datetime
+    if timezone:
+        tz = ZoneInfo(timezone)
+        start = start.replace(tzinfo=tz)
+        end = end.replace(tzinfo=tz)
+
+    vevent.add("dtstart", start)
+    vevent.add("dtend", end)
+    vevent.add("location", build_location(event))
+    desc = build_description(event)
+    if desc:
+        vevent.add("description", desc)
+    if event.ticket_url:
+        vevent.add("url", event.ticket_url)
+    vevent.add("uid", f"{event.normalized_key()}@concert-scraper")
+    return vevent
 
 
 def add_event(event: Event, config: AppConfig) -> bool:
@@ -120,8 +151,8 @@ def _applescript_add_event(event: Event, calendar_name: str) -> bool:
 
     cal = _escape_applescript(calendar_name)
     summary = _escape_applescript(event.title)
-    location = _escape_applescript(_build_location(event))
-    description = _escape_applescript(_build_description(event))
+    location = _escape_applescript(build_location(event))
+    description = _escape_applescript(build_description(event))
     start_str = _format_applescript_date(event.start_datetime)
     end_str = _format_applescript_date(event.end_datetime)
 
@@ -207,20 +238,7 @@ def _caldav_add_event(event: Event, config: AppConfig) -> bool:
     ical = iCalendar()
     ical.add("prodid", "-//ConcertScraper//EN")
     ical.add("version", "2.0")
-
-    vevent = iCalEvent()
-    vevent.add("summary", event.title)
-    vevent.add("dtstart", event.start_datetime)
-    vevent.add("dtend", event.end_datetime)
-    vevent.add("location", _build_location(event))
-    desc = _build_description(event)
-    if desc:
-        vevent.add("description", desc)
-    if event.ticket_url:
-        vevent.add("url", event.ticket_url)
-    vevent.add("uid", f"{event.normalized_key()}@concert-scraper")
-
-    ical.add_component(vevent)
+    ical.add_component(build_vevent(event, timezone=config.timezone))
     target_cal.save_event(ical.to_ical().decode("utf-8"))
     return True
 
@@ -257,19 +275,7 @@ def _ics_add_event(event: Event, config: AppConfig) -> bool:
         cal.add("prodid", "-//ConcertScraper//EN")
         cal.add("version", "2.0")
 
-    vevent = iCalEvent()
-    vevent.add("summary", event.title)
-    vevent.add("dtstart", event.start_datetime)
-    vevent.add("dtend", event.end_datetime)
-    vevent.add("location", _build_location(event))
-    desc = _build_description(event)
-    if desc:
-        vevent.add("description", desc)
-    if event.ticket_url:
-        vevent.add("url", event.ticket_url)
-    vevent.add("uid", f"{event.normalized_key()}@concert-scraper")
-
-    cal.add_component(vevent)
+    cal.add_component(build_vevent(event, timezone=config.timezone))
 
     # Atomic write: write to temp file then rename to avoid partial writes
     fd, tmp_path = tempfile.mkstemp(dir=output_dir, suffix=".ics.tmp")
@@ -281,5 +287,5 @@ def _ics_add_event(event: Event, config: AppConfig) -> bool:
         os.unlink(tmp_path)
         raise
 
-    print(f"Event written to {ics_path}. Open this file to import into any calendar app.")
+    logger.info("Event written to %s", ics_path)
     return True

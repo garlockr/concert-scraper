@@ -285,4 +285,4 @@ def export(ctx: click.Context, output: str) -> None:
             )
         )
 
-    export_ics(events, output, config.default_event_duration_hours)
+    export_ics(events, output, config.default_event_duration_hours, timezone=config.timezone)
