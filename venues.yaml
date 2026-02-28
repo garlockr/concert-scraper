@@ -91,7 +91,7 @@ venues:
     requires_browser: false
 
   - name: "Mississippi Underground"
-    url: "https://www.mississippi-underground.com/"
+    url: "https://www.mississippi-underground.com/calendar"
     location: "1441 N 2nd St, St. Louis, MO 63102"
     requires_browser: true
 
@@ -113,7 +113,7 @@ venues:
     requires_browser: false
 
   - name: "The Muny"
-    url: "https://muny.org/"
+    url: "https://muny.org/show/"
     location: "1 Theatre Dr, St. Louis, MO 63112"
     requires_browser: true
 
@@ -149,13 +149,10 @@ venues:
     location: "2720 Sutton Blvd, Maplewood, MO 63143"
     requires_browser: true
 
-  - name: "Venice Cafe"
-    url: "http://www.thevenicecafe.com/"
-    location: "1903 Pestalozzi Ave, St. Louis, MO 63118"
-    requires_browser: true
+  # Venice Cafe — calendar is an image, needs OCR (future enhancement)
 
   - name: "Hammerstone's"
-    url: "https://hammerstones.net/"
+    url: "https://hammerstones.net/music"
     location: "2028 S 9th St, St. Louis, MO 63104"
     requires_browser: true
 
@@ -249,7 +246,7 @@ venues:
     requires_browser: false
 
   - name: "Saint Louis Music Park"
-    url: "https://www.livenation.com/venue/KovZ917AxsO/saint-louis-music-park-events"
+    url: "https://www.centenecommunityicecenter.com/events/venue/saint-louis-music-park"
     location: "750 Casino Center Dr, Maryland Heights, MO 63043"
     requires_browser: false
 
