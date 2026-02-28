@@ -1,0 +1,8 @@
+# St. Louis Metro Area — Discovered Venues
+# This file is populated by the research agent.
+# Each venue goes through: discovered → validated → ready (or facebook_only / no_events_page / dead_link / permanently_closed)
+#
+# DO NOT manually edit this file while the research agent is running.
+# After the agent finishes, review and curate before generating the final venues.yaml.
+
+venues: []
