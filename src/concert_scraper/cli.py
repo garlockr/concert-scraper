@@ -9,18 +9,30 @@ from pathlib import Path
 import click
 
 
-def _load_dotenv() -> None:
-    """Load .env file from project root if it exists."""
-    env_file = Path.cwd() / ".env"
-    if env_file.exists():
-        for line in env_file.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, _, value = line.partition("=")
-                os.environ.setdefault(key.strip(), value.strip())
+def _load_dotenv(env_path: Path | None = None) -> None:
+    """Load .env file if it exists.
 
-
-_load_dotenv()
+    Args:
+        env_path: Explicit path to .env file. If None, looks next to this
+                  source file (project root), NOT cwd, to avoid loading
+                  arbitrary .env files when invoked from untrusted directories.
+    """
+    if env_path is None:
+        # Resolve relative to the package install location (project root)
+        env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+    if not env_path.is_file():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip()
+        # Strip surrounding quotes (single or double)
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
 
 from concert_scraper import __version__
 from concert_scraper.config import load_config
@@ -38,6 +50,7 @@ from concert_scraper.models import Event
 @click.pass_context
 def main(ctx: click.Context, config_path: str) -> None:
     """Concert Scraper -- Scrape venue websites and add events to your calendar."""
+    _load_dotenv()
     ctx.ensure_object(dict)
     ctx.obj["config_path"] = config_path
 

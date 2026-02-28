@@ -5,7 +5,7 @@ import re
 import sys
 from typing import Literal
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, SecretStr, computed_field, field_validator
 
 
 def _normalize(text: str) -> str:
@@ -71,6 +71,16 @@ class VenueConfig(BaseModel):
     location: str
     requires_browser: bool = False
 
+    @field_validator("url")
+    @classmethod
+    def url_must_be_http(cls, v: str) -> str:
+        from urllib.parse import urlparse
+
+        parsed = urlparse(v)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError(f"Venue URL must use http or https, got: {parsed.scheme!r}")
+        return v
+
 
 class OllamaConfig(BaseModel):
     """Ollama LLM configuration."""
@@ -90,7 +100,7 @@ class CaldavConfig(BaseModel):
 
     url: str = "https://caldav.icloud.com"
     username: str = ""
-    password: str = ""
+    password: SecretStr = SecretStr("")
 
 
 class AppConfig(BaseModel):

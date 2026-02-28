@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from icalendar import Calendar as iCalendar
@@ -71,7 +72,18 @@ def ensure_calendar(config: AppConfig) -> None:
 
 
 def _escape_applescript(s: str) -> str:
-    """Escape a string for safe inclusion in AppleScript."""
+    """Escape a string for safe inclusion in AppleScript.
+
+    Strips control characters (newlines, carriage returns, null bytes, tabs)
+    that could break out of a quoted string context, then escapes backslashes
+    and double quotes.
+    """
+    # Remove characters that can break AppleScript string context
+    s = s.replace("\x00", "")   # null bytes
+    s = s.replace("\r\n", " ")  # CRLF → space
+    s = s.replace("\r", " ")    # CR → space
+    s = s.replace("\n", " ")    # LF → space
+    s = s.replace("\t", " ")    # tab → space
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
@@ -93,7 +105,7 @@ def _applescript_ensure_calendar(calendar_name: str) -> None:
         end if
     end tell
     '''
-    subprocess.run(["osascript", "-e", script], capture_output=True, text=True, check=False)
+    subprocess.run(["osascript", "-e", script], capture_output=True, text=True, check=False, timeout=30)
 
 
 def _applescript_add_event(
@@ -118,7 +130,7 @@ def _applescript_add_event(
     end tell
     '''
     result = subprocess.run(
-        ["osascript", "-e", script], capture_output=True, text=True, check=False
+        ["osascript", "-e", script], capture_output=True, text=True, check=False, timeout=30
     )
     if result.returncode != 0:
         logger.error("AppleScript error: %s", result.stderr.strip())
@@ -148,7 +160,7 @@ def _caldav_ensure_calendar(config: AppConfig) -> None:
     client = caldav.DAVClient(
         url=config.caldav.url,
         username=config.caldav.username,
-        password=config.caldav.password,
+        password=config.caldav.password.get_secret_value(),
     )
     principal = client.principal()
     calendars = principal.calendars()
@@ -175,7 +187,7 @@ def _caldav_add_event(event: Event, config: AppConfig) -> bool:
     client = caldav.DAVClient(
         url=config.caldav.url,
         username=config.caldav.username,
-        password=config.caldav.password,
+        password=config.caldav.password.get_secret_value(),
     )
     principal = client.principal()
     calendars = principal.calendars()
@@ -258,8 +270,15 @@ def _ics_add_event(event: Event, config: AppConfig) -> bool:
 
     cal.add_component(vevent)
 
-    with open(ics_path, "wb") as f:
-        f.write(cal.to_ical())
+    # Atomic write: write to temp file then rename to avoid partial writes
+    fd, tmp_path = tempfile.mkstemp(dir=output_dir, suffix=".ics.tmp")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(cal.to_ical())
+        os.replace(tmp_path, ics_path)
+    except BaseException:
+        os.unlink(tmp_path)
+        raise
 
     print(f"Event written to {ics_path}. Open this file to import into any calendar app.")
     return True

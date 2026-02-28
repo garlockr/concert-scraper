@@ -140,7 +140,7 @@ async def extract_via_anthropic(
     if not api_key:
         raise RuntimeError(
             "ANTHROPIC_API_KEY environment variable is not set.\n"
-            "Set it with: export ANTHROPIC_API_KEY=sk-ant-your-key-here\n"
+            "Set it with: export ANTHROPIC_API_KEY=<your-key>\n"
             "Or switch to Ollama by setting llm_backend: 'ollama' in venues.yaml"
         )
 
@@ -193,6 +193,16 @@ async def extract_events(
     events: list[Event] = []
     for i, raw in enumerate(raw_events):
         try:
+            # Sanitize string values from LLM output: strip control chars
+            for key, val in raw.items():
+                if isinstance(val, str):
+                    raw[key] = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", val)
+                elif isinstance(val, list):
+                    raw[key] = [
+                        re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", v)
+                        if isinstance(v, str) else v
+                        for v in val
+                    ]
             raw["venue_name"] = venue_name
             raw["venue_location"] = venue_location
             event = Event(**raw)

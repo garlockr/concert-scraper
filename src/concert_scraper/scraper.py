@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 import logging
 from urllib.parse import urlparse, urlunparse
 
@@ -7,6 +8,26 @@ import html2text
 import httpx
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_url(url: str) -> None:
+    """Validate that a URL uses http/https and doesn't target private networks.
+
+    Raises ValueError for disallowed URLs.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"URL scheme must be http or https, got: {parsed.scheme!r}")
+    hostname = parsed.hostname
+    if not hostname:
+        raise ValueError(f"URL has no hostname: {url}")
+    try:
+        addr = ipaddress.ip_address(hostname)
+        if addr.is_private or addr.is_loopback or addr.is_reserved or addr.is_link_local:
+            raise ValueError(f"URL targets a private/reserved IP: {hostname}")
+    except ValueError as exc:
+        if "does not appear to be" not in str(exc):
+            raise  # re-raise our own ValueError, not the ipaddress parse error
 
 # Common paths where venues host their event listings
 COMMON_EVENT_PATHS = [
@@ -74,6 +95,7 @@ async def scrape_fast(url: str) -> str | None:
     """Fetch a URL via plain HTTP. Returns cleaned markdown or None if it
     looks like an SPA shell or request fails.
     If the URL returns 404, tries common event page paths on the same domain."""
+    _validate_url(url)
     async with httpx.AsyncClient(
         timeout=15,
         follow_redirects=True,
@@ -99,6 +121,7 @@ async def scrape_fast(url: str) -> str | None:
 
 async def scrape_browser(url: str) -> str:
     """Fetch a URL using a headless browser for JS-rendered content."""
+    _validate_url(url)
     try:
         from playwright.async_api import async_playwright
     except ImportError:
