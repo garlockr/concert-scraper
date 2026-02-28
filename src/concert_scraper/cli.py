@@ -84,10 +84,11 @@ def main(ctx: click.Context, config_path: str, log_file: str, verbose: bool) -> 
 @main.command()
 @click.option("--dry-run", is_flag=True, help="Preview events without adding to calendar")
 @click.option("--venue", "venue_filter", default=None, help="Scrape only this venue (by name)")
+@click.option("--retry-empty", is_flag=True, help="Only scrape venues with no events in the ICS file")
 @click.pass_context
-def scrape_cmd(ctx: click.Context, dry_run: bool, venue_filter: str | None) -> None:
+def scrape_cmd(ctx: click.Context, dry_run: bool, venue_filter: str | None, retry_empty: bool) -> None:
     """Scrape venues and add events to calendar."""
-    asyncio.run(_scrape_async(ctx.obj["config_path"], dry_run, venue_filter))
+    asyncio.run(_scrape_async(ctx.obj["config_path"], dry_run, venue_filter, retry_empty))
 
 
 # Register the command under the name "scrape"
@@ -97,7 +98,29 @@ scrape_cmd.name = "scrape"
 logger = logging.getLogger(__name__)
 
 
-async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | None) -> None:
+def _venues_with_events(config) -> set[str]:
+    """Read the ICS file and return the set of venue names that have events."""
+    ics_path = Path(config.ics_output_dir) / f"{config.calendar_name}.ics"
+    if not ics_path.exists():
+        return set()
+    try:
+        from icalendar import Calendar
+        with open(ics_path, "rb") as f:
+            cal = Calendar.from_ical(f.read())
+        venues = set()
+        for comp in cal.walk():
+            if comp.name == "VEVENT":
+                uid = str(comp.get("uid", ""))
+                # UID format: venue_name|date|title@concert-scraper
+                if "|" in uid:
+                    venues.add(uid.split("|")[0])
+        return venues
+    except Exception as exc:
+        logger.warning("Could not read ICS file for --retry-empty: %s", exc)
+        return set()
+
+
+async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | None, retry_empty: bool = False) -> None:
     """Core async scrape logic."""
     try:
         config = load_config(config_path)
@@ -124,6 +147,14 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
         if not venues:
             click.echo(f"Venue '{venue_filter}' not found in config.", err=True)
             sys.exit(1)
+
+    if retry_empty:
+        have_events = _venues_with_events(config)
+        venues = [v for v in venues if v.name not in have_events]
+        click.echo(f"Retrying {len(venues)} venues with no events in ICS file.")
+        if not venues:
+            click.echo("All venues already have events.")
+            return
 
     added = 0
     skipped = 0
