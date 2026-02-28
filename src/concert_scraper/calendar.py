@@ -16,6 +16,13 @@ from concert_scraper.models import AppConfig, Event
 logger = logging.getLogger(__name__)
 
 
+def _build_location(event: Event) -> str:
+    """Build location string with venue name and address."""
+    if event.venue_location:
+        return f"{event.venue_name} — {event.venue_location}"
+    return event.venue_name
+
+
 def _build_description(event: Event) -> str:
     """Build a human-readable description string for an event."""
     parts: list[str] = []
@@ -117,7 +124,7 @@ def _applescript_add_event(
 
     cal = _escape_applescript(calendar_name)
     summary = _escape_applescript(event.title)
-    location = _escape_applescript(event.venue_location or "")
+    location = _escape_applescript(_build_location(event))
     description = _escape_applescript(_build_description(event))
     start_str = _format_applescript_date(event.start_datetime)
     end_str = _format_applescript_date(event.end_datetime)
@@ -209,8 +216,7 @@ def _caldav_add_event(event: Event, config: AppConfig) -> bool:
     vevent.add("summary", event.title)
     vevent.add("dtstart", event.start_datetime)
     vevent.add("dtend", event.end_datetime)
-    if event.venue_location:
-        vevent.add("location", event.venue_location)
+    vevent.add("location", _build_location(event))
     desc = _build_description(event)
     if desc:
         vevent.add("description", desc)
@@ -259,8 +265,7 @@ def _ics_add_event(event: Event, config: AppConfig) -> bool:
     vevent.add("summary", event.title)
     vevent.add("dtstart", event.start_datetime)
     vevent.add("dtend", event.end_datetime)
-    if event.venue_location:
-        vevent.add("location", event.venue_location)
+    vevent.add("location", _build_location(event))
     desc = _build_description(event)
     if desc:
         vevent.add("description", desc)

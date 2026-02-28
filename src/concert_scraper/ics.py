@@ -4,7 +4,7 @@ import datetime
 
 from icalendar import Calendar, Event as iCalEvent
 
-from concert_scraper.calendar import _build_description
+from concert_scraper.calendar import _build_description, _build_location
 from concert_scraper.models import Event
 
 
@@ -27,8 +27,7 @@ def export_ics(
         vevent.add("summary", event.title)
         vevent.add("dtstart", event.start_datetime)
         vevent.add("dtend", event.end_datetime)
-        if event.venue_location:
-            vevent.add("location", event.venue_location)
+        vevent.add("location", _build_location(event))
         desc = _build_description(event)
         if desc:
             vevent.add("description", desc)
