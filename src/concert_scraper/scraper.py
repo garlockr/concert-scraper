@@ -81,7 +81,7 @@ def clean_html(raw_html: str) -> str:
     converter.ignore_images = True
     converter.body_width = 0
     result = converter.handle(raw_html)
-    return result[:50_000]
+    return result[:30_000]
 
 
 def _looks_like_spa_shell(html: str) -> bool:

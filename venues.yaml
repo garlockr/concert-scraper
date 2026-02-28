@@ -129,13 +129,8 @@ venues:
     location: "6504 Delmar Blvd, University City, MO 63130"
     requires_browser: false
 
-  - name: "BB's Jazz, Blues & Soups"
-    url: "https://bbsjazzbluessoups.com/calendar/"
-    location: "700 S Broadway, St. Louis, MO 63102"
-    requires_browser: false
-
   - name: "Broadway Oyster Bar"
-    url: "http://www.broadwayoysterbar.com/"
+    url: "http://www.broadwayoysterbar.com/musicsched.html"
     location: "736 S Broadway, St. Louis, MO 63102"
     requires_browser: false
 
@@ -241,11 +236,6 @@ venues:
     location: "777 River City Casino Blvd, St. Louis, MO 63125"
     requires_browser: false
 
-  - name: "Backstreet Jazz & Blues"
-    url: "https://www.backstreetjazz.com/"
-    location: "614 West Port Plaza Dr, St. Louis, MO 63146"
-    requires_browser: true
-
   - name: "Ballpark Village"
     url: "https://stlballparkvillage.com/Events-and-Entertainment"
     location: "601 Clark Ave, St. Louis, MO 63102"
@@ -278,6 +268,6 @@ venues:
     requires_browser: false
 
   - name: "Busch Stadium"
-    url: "https://www.mlb.com/cardinals/ballpark"
+    url: "https://www.mlb.com/cardinals/tickets/concerts"
     location: "700 Clark Ave, St. Louis, MO 63102"
     requires_browser: true
