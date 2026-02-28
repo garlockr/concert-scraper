@@ -62,13 +62,13 @@ The research is complete when:
 
 These sources already curate St. Louis venue/event data. Start here to build the baseline.
 
-- [ ] **Do314.com** — Search for "Do314 venues" or "Do314.com St. Louis venues". This is THE local events aggregator. Try to find their venue directory page and extract all venue names.
-- [ ] **Riverfront Times (RFT)** — Search "Riverfront Times St. Louis music venues" and "Riverfront Times best live music St. Louis". RFT is the alt-weekly and publishes venue guides.
-- [ ] **STL Today / St. Louis Post-Dispatch** — Search "STL Today live music venues guide"
-- [ ] **Wikipedia** — Search "List of music venues in St. Louis" or "Music of St. Louis" Wikipedia page
-- [ ] **General web search** — "St. Louis concert venues complete list"
-- [ ] **General web search** — "St. Louis live music venues 2025 2026"
-- [ ] **General web search** — "best live music venues St. Louis Missouri"
+- [x] **Do314.com** — Search for "Do314 venues" or "Do314.com St. Louis venues". This is THE local events aggregator. Try to find their venue directory page and extract all venue names.
+- [x] **Riverfront Times (RFT)** — Search "Riverfront Times St. Louis music venues" and "Riverfront Times best live music St. Louis". RFT is the alt-weekly and publishes venue guides.
+- [x] **STL Today / St. Louis Post-Dispatch** — Search "STL Today live music venues guide"
+- [x] **Wikipedia** — Search "List of music venues in St. Louis" or "Music of St. Louis" Wikipedia page
+- [x] **General web search** — "St. Louis concert venues complete list"
+- [x] **General web search** — "St. Louis live music venues 2025 2026"
+- [x] **General web search** — "best live music venues St. Louis Missouri"
 
 **After Phase 1:** You should have 25-40 venues. If you have fewer than 20, do additional general searches before proceeding.
 
@@ -78,10 +78,10 @@ These sources already curate St. Louis venue/event data. Start here to build the
 
 Search specific event platforms for St. Louis venues.
 
-- [ ] **Eventbrite** — Search "Eventbrite St. Louis music concerts" — note which unique venues host events
-- [ ] **Bandsintown** — Search "Bandsintown St. Louis venues" or "Bandsintown concerts St. Louis"
-- [ ] **Songkick** — Search "Songkick St. Louis venues"
-- [ ] **JamBase** — Search "JamBase St. Louis concerts venues"
+- [x] **Eventbrite** — Search "Eventbrite St. Louis music concerts" — note which unique venues host events
+- [x] **Bandsintown** — Search "Bandsintown St. Louis venues" or "Bandsintown concerts St. Louis"
+- [x] **Songkick** — Search "Songkick St. Louis venues"
+- [x] **JamBase** — Search "JamBase St. Louis concerts venues"
 
 **After Phase 2:** Cross-reference with Phase 1 results. Add any new venues found.
 
@@ -93,34 +93,34 @@ St. Louis has distinct neighborhoods, each with their own music scenes. Search f
 
 ### Tier 1 — Core Music Neighborhoods (search all of these)
 
-- [ ] **The Loop / Delmar Blvd / University City** — "The Loop St. Louis live music bars"
-- [ ] **The Grove (Manchester Ave)** — "The Grove St. Louis live music"
-- [ ] **Cherokee Street** — "Cherokee Street St. Louis live music venues"
-- [ ] **Soulard** — "Soulard St. Louis live music bars" (big bar district)
-- [ ] **South Grand** — "South Grand St. Louis live music"
-- [ ] **Downtown / Washington Ave** — "Downtown St. Louis live music concerts"
-- [ ] **Grand Center / Midtown** — "Grand Center St. Louis music venues" (arts district — Sheldon, KMOX area)
-- [ ] **Laclede's Landing** — "Laclede's Landing St. Louis live music"
+- [x] **The Loop / Delmar Blvd / University City** — "The Loop St. Louis live music bars"
+- [x] **The Grove (Manchester Ave)** — "The Grove St. Louis live music"
+- [x] **Cherokee Street** — "Cherokee Street St. Louis live music venues"
+- [x] **Soulard** — "Soulard St. Louis live music bars" (big bar district)
+- [x] **South Grand** — "South Grand St. Louis live music"
+- [x] **Downtown / Washington Ave** — "Downtown St. Louis live music concerts"
+- [x] **Grand Center / Midtown** — "Grand Center St. Louis music venues" (arts district — Sheldon, KMOX area)
+- [x] **Laclede's Landing** — "Laclede's Landing St. Louis live music"
 
 ### Tier 2 — Secondary Neighborhoods (search these next)
 
-- [ ] **Maplewood** — "Maplewood MO live music"
-- [ ] **Webster Groves** — "Webster Groves live music bars"
-- [ ] **Benton Park / Tower Grove** — "Benton Park Tower Grove live music"
-- [ ] **Central West End** — "Central West End St. Louis live music"
-- [ ] **The Hill** — "The Hill St. Louis live music"
-- [ ] **Clayton** — "Clayton MO live music"
-- [ ] **Dogtown** — "Dogtown St. Louis live music"
+- [x] **Maplewood** — "Maplewood MO live music"
+- [x] **Webster Groves** — "Webster Groves live music bars"
+- [x] **Benton Park / Tower Grove** — "Benton Park Tower Grove live music"
+- [x] **Central West End** — "Central West End St. Louis live music"
+- [x] **The Hill** — "The Hill St. Louis live music"
+- [x] **Clayton** — "Clayton MO live music"
+- [x] **Dogtown** — "Dogtown St. Louis live music"
 
 ### Tier 3 — Suburbs and Metro East (Illinois side)
 
-- [ ] **St. Charles / St. Peters** — "St. Charles MO live music venues"
-- [ ] **Kirkwood / Sunset Hills** — "Kirkwood MO live music"
-- [ ] **Belleville, IL** — "Belleville IL live music"
-- [ ] **Collinsville / Edwardsville, IL** — "Collinsville IL live music venues" (note: The Gateway Classic Cars area, old Pop's location)
-- [ ] **East St. Louis / Sauget, IL** — "Sauget IL concerts" / "East St. Louis music venues"
-- [ ] **Maryland Heights** — "Maryland Heights MO concerts" (Hollywood Casino Amphitheatre area)
-- [ ] **Chesterfield / Wildwood** — "Chesterfield MO live music"
+- [x] **St. Charles / St. Peters** — "St. Charles MO live music venues"
+- [x] **Kirkwood / Sunset Hills** — "Kirkwood MO live music"
+- [x] **Belleville, IL** — "Belleville IL live music"
+- [x] **Collinsville / Edwardsville, IL** — "Collinsville IL live music venues" (note: The Gateway Classic Cars area, old Pop's location)
+- [x] **East St. Louis / Sauget, IL** — "Sauget IL concerts" / "East St. Louis music venues"
+- [x] **Maryland Heights** — "Maryland Heights MO concerts" (Hollywood Casino Amphitheatre area)
+- [x] **Chesterfield / Wildwood** — "Chesterfield MO live music"
 
 **After Phase 3:** You should have found many small bars and breweries not on the aggregator sites.
 
@@ -130,17 +130,17 @@ St. Louis has distinct neighborhoods, each with their own music scenes. Search f
 
 Search for specific types of venues that host music.
 
-- [ ] **Breweries** — "St. Louis breweries with live music"
-- [ ] **Coffee shops** — "St. Louis coffee shops live music open mic"
-- [ ] **Outdoor/Parks** — "St. Louis outdoor concert series 2026" / "St. Louis parks live music summer"
-- [ ] **Record stores** — "St. Louis record stores in-store performances"
-- [ ] **Wineries** — "St. Louis area wineries live music" (Missouri wine country is nearby)
-- [ ] **Churches/Community** — "St. Louis church concert series" / "St. Louis community center music"
-- [ ] **Hotels/Lounges** — "St. Louis hotel bar live music jazz"
-- [ ] **Restaurants** — "St. Louis restaurants live music"
-- [ ] **VFW/Elks/Legion** — "St. Louis VFW live music" / "American Legion St. Louis concerts"
-- [ ] **Art galleries** — "St. Louis art gallery music events"
-- [ ] **Casinos** — "St. Louis area casino concerts" (Lumière, Hollywood, River City)
+- [x] **Breweries** — "St. Louis breweries with live music"
+- [x] **Coffee shops** — "St. Louis coffee shops live music open mic"
+- [x] **Outdoor/Parks** — "St. Louis outdoor concert series 2026" / "St. Louis parks live music summer"
+- [x] **Record stores** — "St. Louis record stores in-store performances"
+- [x] **Wineries** — "St. Louis area wineries live music" (Missouri wine country is nearby)
+- [x] **Churches/Community** — "St. Louis church concert series" / "St. Louis community center music"
+- [x] **Hotels/Lounges** — "St. Louis hotel bar live music jazz"
+- [x] **Restaurants** — "St. Louis restaurants live music"
+- [x] **VFW/Elks/Legion** — "St. Louis VFW live music" / "American Legion St. Louis concerts"
+- [x] **Art galleries** — "St. Louis art gallery music events"
+- [x] **Casinos** — "St. Louis area casino concerts" (Lumiere, Hollywood, River City)
 
 ---
 
@@ -148,14 +148,14 @@ Search for specific types of venues that host music.
 
 Catch the long tail of DIY, house show, and community venues.
 
-- [ ] **Reddit r/StLouis** — Search "r/StLouis live music" / "r/StLouis concert venues" / "r/StLouis best bars for music"
-- [ ] **Reddit r/StLouis** — Search "r/StLouis hidden gem music" / "r/StLouis local bands where to see"
-- [ ] **General search** — "St. Louis DIY music scene venues"
-- [ ] **General search** — "St. Louis underground music venues"
-- [ ] **General search** — "St. Louis jazz clubs" (STL has a rich jazz history)
-- [ ] **General search** — "St. Louis blues clubs" (birthplace of blues — National Blues Museum area)
-- [ ] **General search** — "St. Louis punk venues" / "St. Louis metal venues"
-- [ ] **General search** — "new music venues St. Louis 2025 2026" (catch recently opened spots)
+- [x] **Reddit r/StLouis** — Search "r/StLouis live music" / "r/StLouis concert venues" / "r/StLouis best bars for music"
+- [x] **Reddit r/StLouis** — Search "r/StLouis hidden gem music" / "r/StLouis local bands where to see"
+- [x] **General search** — "St. Louis DIY music scene venues"
+- [x] **General search** — "St. Louis underground music venues"
+- [x] **General search** — "St. Louis jazz clubs" (STL has a rich jazz history)
+- [x] **General search** — "St. Louis blues clubs" (birthplace of blues — National Blues Museum area)
+- [x] **General search** — "St. Louis punk venues" / "St. Louis metal venues"
+- [x] **General search** — "new music venues St. Louis 2025 2026" (catch recently opened spots)
 
 ---
 
@@ -164,24 +164,24 @@ Catch the long tail of DIY, house show, and community venues.
 For EVERY venue in `venues_discovered.yaml`, perform these checks:
 
 ### 6a. Website Validation
-- [ ] For each venue with a website, fetch the homepage and verify it loads
-- [ ] Find the specific events/calendar page URL (not just the homepage)
-- [ ] If the events page exists, check if it contains actual event listings
-- [ ] If the events page appears to be JS-rendered (empty body, SPA shell), mark `requires_browser: true`
-- [ ] If the website is dead (404, domain expired), mark `status: dead_link`
+- [x] For each venue with a website, fetch the homepage and verify it loads
+- [x] Find the specific events/calendar page URL (not just the homepage)
+- [x] If the events page exists, check if it contains actual event listings
+- [x] If the events page appears to be JS-rendered (empty body, SPA shell), mark `requires_browser: true`
+- [x] If the website is dead (404, domain expired), mark `status: dead_link`
 
 ### 6b. Facebook-Only Venues
-- [ ] For venues with no website, search "{venue name} St. Louis facebook" to find their Facebook page
-- [ ] Record the Facebook URL in the `website` field
-- [ ] Mark `events_source: facebook` and `status: facebook_only`
+- [x] For venues with no website, search "{venue name} St. Louis facebook" to find their Facebook page
+- [x] Record the Facebook URL in the `website` field
+- [x] Mark `events_source: facebook` and `status: facebook_only`
 
 ### 6c. Address Verification
-- [ ] For venues missing an address, search "{venue name} St. Louis address"
-- [ ] Verify the address looks correct (right neighborhood, not a residential address for a concert hall, etc.)
+- [x] For venues missing an address, search "{venue name} St. Louis address"
+- [x] Verify the address looks correct (right neighborhood, not a residential address for a concert hall, etc.)
 
 ### 6d. Closure Check
-- [ ] Search for any venues that might be permanently closed: "{venue name} St. Louis closed"
-- [ ] Mark closed venues as `status: permanently_closed`
+- [x] Search for any venues that might be permanently closed: "{venue name} St. Louis closed"
+- [x] Mark closed venues as `status: permanently_closed`
 
 ---
 
@@ -264,3 +264,30 @@ If your research does NOT find these well-known STL venues, something went wrong
 - Soldiers Memorial (occasional concerts)
 
 This list is NOT exhaustive — it's a minimum sanity check.
+
+---
+
+## Research Summary (completed 2026-02-27)
+
+- **Total venues discovered:** 63
+- **Validated & scrapable (in venues.yaml):** 51
+- **Facebook-only (manual check needed):** 2 (CBGB, The Haunt)
+- **Dead links / permanently closed:** 5 (Fubar, The Ready Room, The Firebird, 2720 Cherokee, Pop's old location)
+- **No events page found:** 1 (The Lux)
+- **Other (not in venues.yaml but validated):** 4 (Atomic Cowboy, The Improv Shop, Vintage Vinyl, Whitaker Music Festival)
+
+### Sanity Check Results
+All 24 expected major venues were found and verified:
+- The Ready Room: CONFIRMED CLOSED (COVID 2020, briefly reopened, closed again)
+- Fubar: CONFIRMED CLOSED (Feb 2020, replaced by Red Flag)
+- The Firebird: CONFIRMED CLOSED (per Yelp Jan 2026)
+- Soldiers Memorial: Not found as regular music venue (occasional events only)
+- All other expected venues: FOUND and VALIDATED
+
+### Notable Discoveries Beyond Expected List
+- The Sovereign (opened Sept 2025 in Grand Center, by Old Rock House team)
+- The Golden Record (newer venue at 2720 Cherokee, replaced 2720 Cherokee PAC)
+- The Hawthorn (opened 2022, 1300 cap mid-size hall downtown)
+- Mississippi Underground (10,000 sq ft EDM warehouse)
+- City Winery St. Louis (opened March 2023 at City Foundry)
+- The Attic Music Bar, The Hi-Hat, Platypus, Sinkhole, and many more small venues
