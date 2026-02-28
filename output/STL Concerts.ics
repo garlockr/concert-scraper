@@ -7736,4 +7736,50 @@ DESCRIPTION:Artists: Guns N' Roses\nGuns N' Roses: World Tour 2026 is knoc
 LOCATION:Busch Stadium — 700 Clark Ave\, St. Louis\, MO 63102
 URL:https://www.mlb.com/cardinals/tickets/concerts/guns-n-roses
 END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Bridget Everett And The Tender Moments
+DTSTART;TZID=America/Chicago:20260310T200000
+DTEND;TZID=America/Chicago:20260310T230000
+UID:The Pageant|2026-03-10|bridget everett and the tender moments@concert-
+ scraper
+DESCRIPTION:Artists: Bridget Everett\, The Tender Moments\nBig Titties\, B
+ ig Dreams\nTickets: https://www.ticketmaster.com/event/06006378B762B065?br
+ and=thepageant&camefrom=cfc_pageant_webcc
+LOCATION:The Pageant — 6161 Delmar Blvd\, St. Louis\, MO 63112
+URL:https://www.ticketmaster.com/event/06006378B762B065?brand=thepageant&c
+ amefrom=cfc_pageant_webcc
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Nothing People
+DTSTART;TZID=America/Chicago:20260307T200000
+DTEND;TZID=America/Chicago:20260307T230000
+UID:Red Flag|2026-03-07|nothing people@concert-scraper
+DESCRIPTION:Artists: Nothing People\, The Incredible Goats\, Exscend\, Lik
+ e A Switch\nTickets: https://www.redflagstl.com/shows/nothing-people-07-ma
+ r
+LOCATION:Red Flag — 3040 Locust St\, St. Louis\, MO 63103
+URL:https://www.redflagstl.com/shows/nothing-people-07-mar
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Cardinals Opening Day Celebration
+DTSTART;TZID=America/Chicago:20260326T200000
+DTEND;TZID=America/Chicago:20260326T230000
+UID:Ballpark Village|2026-03-26|cardinals opening day celebration@concert-
+ scraper
+DESCRIPTION:Price: Free\nArtists: The Red Jackets Band\nFREE Opening Day P
+ ep Rally hosted by Todd Thomas and Team Redbird in the Together Credit Uni
+ on Plaza featuring entertainment\, games\, and giveaways. Live music from 
+ The Red Jackets Band during the game at FanDuel Sports Network Live!
+LOCATION:Ballpark Village — 601 Clark Ave\, St. Louis\, MO 63102
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Tyler Hubbard - Post-Game Show
+DTSTART;TZID=America/Chicago:20260807T200000
+DTEND;TZID=America/Chicago:20260807T230000
+UID:Ballpark Village|2026-08-07|tyler hubbard postgame show@concert-scrape
+ r
+DESCRIPTION:Artists: Tyler Hubbard\nPost-game show in FanDuel Sports Netwo
+ rk Live!
+LOCATION:Ballpark Village — 601 Clark Ave\, St. Louis\, MO 63102
+END:VEVENT
 END:VCALENDAR
