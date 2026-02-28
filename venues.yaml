@@ -91,7 +91,7 @@ venues:
     requires_browser: false
 
   - name: "Mississippi Underground"
-    url: "https://www.mississippi-underground.com/calendar"
+    url: "https://theticketing.co/widgets/o/mississippiunderground?version=1.0&id=991&theme=transparent&text-color=white&remove-header=true&auto-height=true"
     location: "1441 N 2nd St, St. Louis, MO 63102"
     requires_browser: true
 
@@ -113,7 +113,7 @@ venues:
     requires_browser: false
 
   - name: "The Muny"
-    url: "https://muny.org/show/"
+    url: "https://muny.org/shows/"
     location: "1 Theatre Dr, St. Louis, MO 63112"
     requires_browser: true
 
@@ -152,7 +152,7 @@ venues:
   # Venice Cafe — calendar is an image, needs OCR (future enhancement)
 
   - name: "Hammerstone's"
-    url: "https://hammerstones.net/music"
+    url: "https://www.stlblues.net/iCalendar.asp?accessKey=2A194A16AC1"
     location: "2028 S 9th St, St. Louis, MO 63104"
     requires_browser: true
 
