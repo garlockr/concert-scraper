@@ -165,8 +165,17 @@ async def scrape_browser(url: str) -> str:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
-        # Give JS frameworks time to render content
-        await page.wait_for_timeout(3000)
+
+        # Wait for meaningful content to appear. SPAs populate the DOM after
+        # initial load, so we poll until the body has substantial text or we
+        # hit a timeout. This handles React/Vue/Angular apps that fetch data
+        # after the shell renders.
+        for _ in range(10):  # up to ~10 seconds
+            await page.wait_for_timeout(1000)
+            text_len = await page.evaluate("document.body.innerText.length")
+            if text_len > 1500:
+                break
+
         content = await page.content()
         await browser.close()
     return clean_html(content)
