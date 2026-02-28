@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from concert_scraper.db import get_upcoming, init_db, is_seen, mark_seen
+from concert_scraper.db import get_upcoming, init_db, is_seen, mark_seen, purge_old_events
 
 
 def test_init_db_creates_table(tmp_path):
@@ -113,3 +113,31 @@ def test_init_db_creates_parent_dirs(tmp_path):
     db_path = str(tmp_path / "a" / "b" / "c" / "events.db")
     init_db(db_path)
     assert os.path.exists(db_path)
+
+
+def test_purge_old_events(tmp_path):
+    """purge_old_events should delete events older than the threshold."""
+    db_path = str(tmp_path / "test.db")
+    init_db(db_path)
+
+    mark_seen(db_path, "v|2020-01-01|old", "Venue", "Old Show", "2020-01-01")
+    mark_seen(db_path, "v|2099-12-31|future", "Venue", "Future Show", "2099-12-31")
+
+    deleted = purge_old_events(db_path, days=90)
+    assert deleted == 1
+
+    # Future event should still be there
+    upcoming = get_upcoming(db_path)
+    assert len(upcoming) == 1
+    assert upcoming[0]["event_title"] == "Future Show"
+
+
+def test_purge_old_events_returns_zero_when_nothing_to_purge(tmp_path):
+    """purge_old_events should return 0 when all events are recent."""
+    db_path = str(tmp_path / "test.db")
+    init_db(db_path)
+
+    mark_seen(db_path, "v|2099-12-31|future", "Venue", "Future Show", "2099-12-31")
+
+    deleted = purge_old_events(db_path, days=90)
+    assert deleted == 0

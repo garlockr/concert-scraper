@@ -4,7 +4,6 @@ import asyncio
 import logging
 import os
 import sys
-import time
 from pathlib import Path
 
 import click
@@ -81,7 +80,10 @@ def main(ctx: click.Context, config_path: str, log_file: str, verbose: bool) -> 
     ctx.obj["config_path"] = config_path
 
 
-@main.command()
+logger = logging.getLogger(__name__)
+
+
+@main.command(name="scrape")
 @click.option("--dry-run", is_flag=True, help="Preview events without adding to calendar")
 @click.option("--venue", "venue_filter", default=None, help="Scrape only this venue (by name)")
 @click.option("--retry-empty", is_flag=True, help="Only scrape venues with no events in the ICS file")
@@ -89,13 +91,6 @@ def main(ctx: click.Context, config_path: str, log_file: str, verbose: bool) -> 
 def scrape_cmd(ctx: click.Context, dry_run: bool, venue_filter: str | None, retry_empty: bool) -> None:
     """Scrape venues and add events to calendar."""
     asyncio.run(_scrape_async(ctx.obj["config_path"], dry_run, venue_filter, retry_empty))
-
-
-# Register the command under the name "scrape"
-scrape_cmd.name = "scrape"
-
-
-logger = logging.getLogger(__name__)
 
 
 def _venues_with_events(config) -> set[str]:
@@ -133,6 +128,9 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
         return
 
     db_mod.init_db(config.db_path)
+    purged = db_mod.purge_old_events(config.db_path)
+    if purged:
+        logger.info("Purged %d old events from database", purged)
 
     if not dry_run:
         try:
@@ -216,7 +214,7 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
 
         # Delay between venues (skip after the last one)
         if i < len(venues) - 1:
-            time.sleep(config.request_delay)
+            await asyncio.sleep(config.request_delay)
 
     action = "Would add" if dry_run else "Added"
     click.echo(f"Done. {action} {added} new events, skipped {skipped} duplicates.")
@@ -265,7 +263,6 @@ def export(ctx: click.Context, output: str) -> None:
         return
 
     import datetime as dt
-    import json
 
     events = []
     for row in upcoming:

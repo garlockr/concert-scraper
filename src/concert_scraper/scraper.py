@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ipaddress
 import logging
+import re
 from urllib.parse import urlparse, urlunparse
 
 import html2text
@@ -91,8 +92,6 @@ def _looks_like_spa_shell(html: str) -> bool:
     signals that it's a JS-rendered app (SPA mount points, noscript tags).
     This avoids false positives on small but legitimate static pages.
     """
-    import re
-
     lower_html = html.lower()
 
     spa_signals = [
@@ -155,7 +154,7 @@ async def scrape_fast(url: str) -> str | None:
                     if resp.status_code == 200 and not _looks_like_spa_shell(resp.text):
                         logger.info("Found working URL: %s", fallback_url)
                         return clean_html(resp.text)
-                except (httpx.HTTPError, httpx.TimeoutException):
+                except httpx.HTTPError:
                     continue
 
         return None
@@ -173,21 +172,23 @@ async def scrape_browser(url: str) -> str:
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
+        try:
+            page = await browser.new_page()
+            await page.goto(url, wait_until="domcontentloaded", timeout=30_000)
 
-        # Wait for meaningful content to appear. SPAs populate the DOM after
-        # initial load, so we poll until the body has substantial text or we
-        # hit a timeout. This handles React/Vue/Angular apps that fetch data
-        # after the shell renders.
-        for _ in range(10):  # up to ~10 seconds
-            await page.wait_for_timeout(1000)
-            text_len = await page.evaluate("document.body.innerText.length")
-            if text_len > 1500:
-                break
+            # Wait for meaningful content to appear. SPAs populate the DOM after
+            # initial load, so we poll until the body has substantial text or we
+            # hit a timeout. This handles React/Vue/Angular apps that fetch data
+            # after the shell renders.
+            for _ in range(10):  # up to ~10 seconds
+                await page.wait_for_timeout(1000)
+                text_len = await page.evaluate("document.body.innerText.length")
+                if text_len > 1500:
+                    break
 
-        content = await page.content()
-        await browser.close()
+            content = await page.content()
+        finally:
+            await browser.close()
     return clean_html(content)
 
 

@@ -78,6 +78,20 @@ def mark_seen(
         conn.close()
 
 
+def purge_old_events(db_path: str, days: int = 90) -> int:
+    """Delete events older than the given number of days. Returns rows deleted."""
+    conn = sqlite3.connect(db_path)
+    try:
+        cursor = conn.execute(
+            "DELETE FROM seen_events WHERE event_date < date('now', ?)",
+            (f"-{days} days",),
+        )
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()
+
+
 def get_upcoming(db_path: str) -> list[dict]:
     """Return all events with dates today or later, ordered by date ascending."""
     conn = sqlite3.connect(db_path)
