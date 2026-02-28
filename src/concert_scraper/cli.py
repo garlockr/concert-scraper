@@ -207,6 +207,7 @@ async def _scrape_async(config_path: str, dry_run: bool, venue_filter: str | Non
                         venue.name,
                         event.title,
                         event.date.isoformat(),
+                        event_json=event.model_dump_json(),
                     )
                     click.echo(f"  [ADDED] {event.title} on {event.date}")
                     added += 1
@@ -264,14 +265,23 @@ def export(ctx: click.Context, output: str) -> None:
         return
 
     import datetime as dt
+    import json
 
     events = []
     for row in upcoming:
+        if row.get("event_json"):
+            try:
+                events.append(Event.model_validate_json(row["event_json"]))
+                continue
+            except Exception:
+                pass
+        # Fallback for events stored before event_json was added
         events.append(
             Event(
                 title=row["event_title"],
                 date=dt.date.fromisoformat(row["event_date"]),
                 venue_name=row["venue_name"],
+                default_duration_hours=config.default_event_duration_hours,
             )
         )
 

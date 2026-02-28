@@ -32,8 +32,7 @@ class Event(BaseModel):
     description: str | None = None
     venue_name: str
     venue_location: str | None = None
-
-    _default_duration_hours: int = 3
+    default_duration_hours: int = 3
 
     @computed_field  # type: ignore[prop-decorator]
     @property
@@ -51,11 +50,15 @@ class Event(BaseModel):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def end_datetime(self) -> datetime.datetime:
-        """Return end time on the event date, or start + default duration."""
+        """Return end time on the event date, or start + default duration.
+        If end_time crosses midnight (before start), rolls to the next day."""
         if self.end_time:
-            return datetime.datetime.combine(self.date, self.end_time)
+            end = datetime.datetime.combine(self.date, self.end_time)
+            if end <= self.start_datetime:
+                end += datetime.timedelta(days=1)
+            return end
         return self.start_datetime + datetime.timedelta(
-            hours=self._default_duration_hours
+            hours=self.default_duration_hours
         )
 
     def normalized_key(self) -> str:

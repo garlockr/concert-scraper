@@ -149,7 +149,7 @@ async def extract_via_anthropic(
     client = anthropic.AsyncAnthropic(api_key=api_key)
     response = await client.messages.create(
         model=config.anthropic.model,
-        max_tokens=8192,
+        max_tokens=16384,
         system=prompt,
         messages=[{"role": "user", "content": markdown}],
     )
@@ -205,6 +205,7 @@ async def extract_events(
                     ]
             raw["venue_name"] = venue_name
             raw["venue_location"] = venue_location
+            raw["default_duration_hours"] = config.default_event_duration_hours
             event = Event(**raw)
             events.append(event)
         except Exception as exc:

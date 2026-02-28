@@ -75,7 +75,7 @@ COMMON_EVENT_PATHS = [
 
 
 def clean_html(raw_html: str) -> str:
-    """Convert raw HTML to markdown text, truncated to 50k characters."""
+    """Convert raw HTML to markdown text, truncated to 30k characters."""
     converter = html2text.HTML2Text()
     converter.ignore_links = False
     converter.ignore_images = True
@@ -85,27 +85,37 @@ def clean_html(raw_html: str) -> str:
 
 
 def _looks_like_spa_shell(html: str) -> bool:
-    """Heuristic check for single-page app shells with no real content."""
+    """Heuristic check for single-page app shells with no real content.
+
+    Returns True only when the page has BOTH very little text content AND
+    signals that it's a JS-rendered app (SPA mount points, noscript tags).
+    This avoids false positives on small but legitimate static pages.
+    """
     import re
 
+    lower_html = html.lower()
+
+    spa_signals = [
+        '<div id="root"></div>',
+        '<div id="app"></div>',
+        '<div id="root">',
+        '<div id="app">',
+        '<div id="__next">',
+        "window.__initial",
+    ]
+    has_spa_signal = any(sig.lower() in lower_html for sig in spa_signals)
+    has_noscript = "<noscript>" in lower_html
+
+    # If no SPA indicators at all, it's not an SPA shell
+    if not has_spa_signal and not has_noscript:
+        return False
+
+    # Check if body text content is very short (suggesting an empty shell)
     body_match = re.search(r"<body[^>]*>(.*)</body>", html, re.DOTALL | re.IGNORECASE)
     if body_match:
         body_text = re.sub(r"<[^>]+>", "", body_match.group(1)).strip()
         if len(body_text) < 500:
             return True
-
-    spa_indicators = [
-        '<div id="root"></div>',
-        '<div id="app"></div>',
-        '<div id="root">',
-        '<div id="app">',
-    ]
-    lower_html = html.lower()
-    for indicator in spa_indicators:
-        if indicator.lower() in lower_html:
-            # Check if the div is essentially empty
-            if '<noscript>' in lower_html:
-                return True
 
     return False
 

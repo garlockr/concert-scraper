@@ -47,9 +47,7 @@ def add_event(event: Event, config: AppConfig) -> bool:
     try:
         backend = config.resolved_calendar_backend()
         if backend == "applescript":
-            return _applescript_add_event(
-                event, config.calendar_name, config.default_event_duration_hours
-            )
+            return _applescript_add_event(event, config.calendar_name)
         elif backend == "caldav":
             return _caldav_add_event(event, config)
         elif backend == "ics":
@@ -115,9 +113,7 @@ def _applescript_ensure_calendar(calendar_name: str) -> None:
     subprocess.run(["osascript", "-e", script], capture_output=True, text=True, check=False, timeout=30)
 
 
-def _applescript_add_event(
-    event: Event, calendar_name: str, default_duration_hours: int
-) -> bool:
+def _applescript_add_event(event: Event, calendar_name: str) -> bool:
     """Add an event to Apple Calendar via AppleScript."""
     if sys.platform != "darwin":
         raise RuntimeError("AppleScript backend requires macOS")

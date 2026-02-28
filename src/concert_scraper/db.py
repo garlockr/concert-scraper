@@ -21,9 +21,15 @@ def init_db(db_path: str) -> None:
                 event_date TEXT NOT NULL,
                 calendar_event_id TEXT,
                 first_seen TEXT NOT NULL DEFAULT (datetime('now')),
-                last_seen TEXT NOT NULL DEFAULT (datetime('now'))
+                last_seen TEXT NOT NULL DEFAULT (datetime('now')),
+                event_json TEXT
             )
         """)
+        # Migrate existing databases that lack the event_json column
+        cursor = conn.execute("PRAGMA table_info(seen_events)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "event_json" not in columns:
+            conn.execute("ALTER TABLE seen_events ADD COLUMN event_json TEXT")
         conn.commit()
     finally:
         conn.close()
@@ -56,15 +62,16 @@ def mark_seen(
     event_title: str,
     event_date: str,
     calendar_event_id: str = "",
+    event_json: str = "",
 ) -> None:
     """Mark an event as seen in the database. Idempotent (INSERT OR IGNORE)."""
     conn = sqlite3.connect(db_path)
     try:
         conn.execute(
             """INSERT OR IGNORE INTO seen_events
-               (normalized_key, venue_name, event_title, event_date, calendar_event_id)
-               VALUES (?, ?, ?, ?, ?)""",
-            (normalized_key, venue_name, event_title, event_date, calendar_event_id),
+               (normalized_key, venue_name, event_title, event_date, calendar_event_id, event_json)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (normalized_key, venue_name, event_title, event_date, calendar_event_id, event_json),
         )
         conn.commit()
     finally:
@@ -78,7 +85,7 @@ def get_upcoming(db_path: str) -> list[dict]:
     try:
         cursor = conn.execute(
             """SELECT normalized_key, venue_name, event_title, event_date,
-                      calendar_event_id, first_seen, last_seen
+                      calendar_event_id, first_seen, last_seen, event_json
                FROM seen_events
                WHERE event_date >= date('now')
                ORDER BY event_date ASC"""
